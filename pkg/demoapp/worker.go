@@ -3,9 +3,10 @@ package demoapp
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"sync"
 	"time"
+
+	"git.soma.salesforce.com/jusong-chen/concurrency/pkg/mandelbrot"
 )
 
 //Job describes job info
@@ -43,6 +44,7 @@ func (w Worker) Run(ctx context.Context, wg *sync.WaitGroup, jobs <-chan Job) {
 
 func (w Worker) process(j *Job) {
 	fmt.Printf("worker(ID=%d) start working on %s\n", w.ID, j.ID)
-	time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+	// time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+	mandelbrot.GenImage()
 	fmt.Printf("worker(ID=%d) completed  %s\n", w.ID, j.ID)
 }

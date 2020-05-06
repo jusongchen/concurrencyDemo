@@ -1,28 +1,44 @@
 package mandelbrot
 
 import (
+	"fmt"
 	"image"
 	"image/color"
+	"image/png"
+	"log"
+	"math/rand"
+	"os"
+	"path"
 	"sync"
+
+	"github.com/lithammer/shortuuid/v3"
 )
 
 const (
 	destDir = "/home/jusong.chen/caddy/images"
-	output  = "out.png"
-	width   = 2048
-	height  = 2048
+
+	minPixels = 2048
+	maxPixels = 4096
 )
 
-// f, err := os.Create(path.Join(destDir, output))
-// if err != nil {
-// 	log.Fatal(err)
-// }
+//GenImage create an mandelbrot image and save it to a randam file
+func GenImage() {
+	size := rand.Intn(maxPixels-minPixels+1) + minPixels
 
-// img := mandelbrot.CreateImage(width, height)
+	filename := shortuuid.New() + ".png"
 
-// if err = png.Encode(f, img); err != nil {
-// 	log.Fatal(err)
-// }
+	f, err := os.Create(path.Join(destDir, filename))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	img := CreateImage(size, size)
+
+	if err = png.Encode(f, img); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("image created:", filename)
+}
 
 // CreateImage creates a mandelbrot image with specified size
 func CreateImage(width, height int) image.Image {
