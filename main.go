@@ -41,9 +41,7 @@ func run(numWorkers, numJobs int) {
 		log.Fatalf("demo app:%v", err)
 		return
 	}
-	select {
-	case <-interrupt:
-		log.Printf("\nGot SIGINT or SIGTERM, shutting down http server ...\n")
-	}
+	<-interrupt
+	log.Printf("\nGot SIGINT or SIGTERM, shutting down http server ...\n")
 	app.Close()
 }
