@@ -1,9 +1,8 @@
 package demoapp
 
 import (
+	"context"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
@@ -25,19 +24,11 @@ func TestNew(t *testing.T) {
 			numJob:    10,
 			wantErr:   false,
 		},
-		{
-			name:      "worker_4_job_1000",
-			numWorker: 4,
-			numJob:    1000,
-			wantErr:   false,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			app, err := New(tt.numWorker, tt.numJob)
-			require.NoError(t, err)
-			require.NotNil(t, app)
-			app.Close()
+			ctx := context.Background()
+			Run(ctx, tt.numWorker, tt.numJob)
 
 		})
 	}

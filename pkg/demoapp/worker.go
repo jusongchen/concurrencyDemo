@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sync"
-	"time"
 
 	"git.soma.salesforce.com/jusong-chen/concurrency/pkg/mandelbrot"
 )
@@ -27,14 +26,15 @@ func (w Worker) Run(ctx context.Context, wg *sync.WaitGroup, jobs <-chan Job) {
 	}()
 
 	fmt.Printf("worker(ID=%d) is ready ...\n", w.ID)
+
+forLabel:
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case j, ok := <-jobs:
 			if !ok {
-				time.Sleep(time.Microsecond)
-				continue
+				break forLabel
 			}
 			w.process(&j)
 		}

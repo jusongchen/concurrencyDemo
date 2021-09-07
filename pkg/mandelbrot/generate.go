@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	destDir = "/home/jusong.chen/caddy/images"
+	destDir = "/tmp/test/images"
 
 	minPixels = 2048
 	maxPixels = 4096

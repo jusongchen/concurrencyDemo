@@ -3,53 +3,37 @@ package demoapp
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
 	"strconv"
 	"sync"
+	"syscall"
 )
 
 //App implements a server
-type App struct {
-	numWorker int
-	cancelFn  context.CancelFunc
-	wg        *sync.WaitGroup
-}
 
-//New starts a app instance
-func New(numWorker int, numJob int) (*App, error) {
+//Run starts a app instance
+func Run(ctx context.Context, numWorker int, numJob int) {
 
-	app := App{
-		numWorker: numWorker,
-		wg:        &sync.WaitGroup{},
-	}
+	wg := &sync.WaitGroup{}
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	jobs := make(chan Job)
-
-	ctx, cancelFn := context.WithCancel(context.Background())
-	app.cancelFn = cancelFn
-
 	go generateJobs(ctx, numJob, jobs)
 
-	for i := 0; i < app.numWorker; i++ {
+	for i := 0; i < numWorker; i++ {
+		wg.Add(1)
 		go func(workerID int) {
 			w := Worker{ID: workerID}
-			app.wg.Add(1)
-			w.Run(ctx, app.wg, jobs)
+			w.Run(ctx, wg, jobs)
 		}(i)
 	}
 
-	return &app, nil
-}
-
-//Close shut down the server
-func (app *App) Close() {
-	fmt.Printf("start to shut down the server ...\n")
-	app.cancelFn()
-
 	fmt.Printf("waiting for all worker to quit ...\n")
-	app.wg.Wait()
-
+	wg.Wait()
 	fmt.Printf("server shut down.\n")
-
 }
 
 func generateJobs(ctx context.Context, numJob int, jobs chan Job) {

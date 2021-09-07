@@ -1,10 +1,8 @@
 package main
 
 import (
+	"context"
 	"math/rand"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"log"
@@ -29,19 +27,6 @@ func main() {
 		log.Printf("get environment variables:%v\n", err)
 		return
 	}
-	run(cfg.NumWorkers, cfg.NumJobs)
-}
 
-func run(numWorkers, numJobs int) {
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
-	app, err := demoapp.New(numWorkers, numJobs)
-	if err != nil {
-		log.Fatalf("demo app:%v", err)
-		return
-	}
-	<-interrupt
-	log.Printf("\nGot SIGINT or SIGTERM, shutting down http server ...\n")
-	app.Close()
+	demoapp.Run(context.Background(), cfg.NumWorkers, cfg.NumJobs)
 }
