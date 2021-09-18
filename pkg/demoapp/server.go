@@ -18,7 +18,7 @@ type Job struct {
 }
 
 //Run starts a app instance
-func Run(ctx context.Context, numWorker int, numJob int) {
+func Run(ctx context.Context, degreeOfConcurrency int, numJob int) {
 
 	wg := &sync.WaitGroup{}
 
@@ -28,7 +28,7 @@ func Run(ctx context.Context, numWorker int, numJob int) {
 	jobs := make(chan Job)
 	go generateJobs(ctx, numJob, jobs)
 
-	semaphore := make(chan int, numWorker)
+	semaphore := make(chan int, degreeOfConcurrency)
 	for job := range jobs {
 		wg.Add(1)
 		go DoJob(ctx, semaphore, wg, job)

@@ -14,8 +14,8 @@ import (
 const ()
 
 type config struct {
-	NumJobs    int `required:"true" envconfig:"NUM_JOBS"`
-	NumWorkers int `required:"true" envconfig:"NUM_WORKERS"`
+	NumJobs             int `required:"true" envconfig:"NUM_JOBS"`
+	DegreeOfConcurrency int `required:"true" envconfig:"DEGREE_CONCURRENCY"`
 }
 
 func main() {
@@ -28,5 +28,5 @@ func main() {
 		return
 	}
 
-	demoapp.Run(context.Background(), cfg.NumWorkers, cfg.NumJobs)
+	demoapp.Run(context.Background(), cfg.DegreeOfConcurrency, cfg.NumJobs)
 }
