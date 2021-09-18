@@ -21,7 +21,7 @@ func TestNew(t *testing.T) {
 		{
 			name:      "worker_2_job_10",
 			numWorker: 2,
-			numJob:    10,
+			numJob:    3,
 			wantErr:   false,
 		},
 	}

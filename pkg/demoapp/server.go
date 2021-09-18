@@ -8,30 +8,33 @@ import (
 	"strconv"
 	"sync"
 	"syscall"
+
+	"git.soma.salesforce.com/jusong-chen/concurrency/pkg/mandelbrot"
 )
 
-//App implements a server
+//Job describes job info
+type Job struct {
+	ID string
+}
 
 //Run starts a app instance
 func Run(ctx context.Context, numWorker int, numJob int) {
 
 	wg := &sync.WaitGroup{}
 
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	jobs := make(chan Job)
 	go generateJobs(ctx, numJob, jobs)
 
-	for i := 0; i < numWorker; i++ {
+	semaphore := make(chan int, numWorker)
+	for job := range jobs {
 		wg.Add(1)
-		go func(workerID int) {
-			w := Worker{ID: workerID}
-			w.Run(ctx, wg, jobs)
-		}(i)
+		go DoJob(ctx, semaphore, wg, job)
 	}
 
-	fmt.Printf("waiting for all worker to quit ...\n")
+	fmt.Printf("waiting for all worker to complete their job ...\n")
 	wg.Wait()
 	fmt.Printf("server shut down.\n")
 }
@@ -52,4 +55,26 @@ func generateJobs(ctx context.Context, numJob int, jobs chan Job) {
 		}
 	}
 
+}
+
+//Run start processing and quit when all job is done or a ctx Done signal received
+func DoJob(ctx context.Context, sem chan int, wg *sync.WaitGroup, job Job) {
+
+	defer func() {
+		wg.Done()
+		<-sem
+	}()
+
+	sem <- 1
+	select {
+	case <-ctx.Done():
+		fmt.Printf("quit signal detected, cancelling job%s\n", job.ID)
+		return
+	default:
+		fmt.Printf("worker start working on %s\n", job.ID)
+		// time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+		mandelbrot.GenImage()
+
+		fmt.Printf("job completed:  %s\n", job.ID)
+	}
 }
