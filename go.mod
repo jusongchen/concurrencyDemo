@@ -1,4 +1,4 @@
-module git.soma.salesforce.com/jusong-chen/concurrency
+module github.com/jusongchen/concurrencyDemo
 
 go 1.13
 

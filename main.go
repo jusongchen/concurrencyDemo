@@ -7,7 +7,7 @@ import (
 
 	"log"
 
-	"git.soma.salesforce.com/jusong-chen/concurrency/pkg/demoapp"
+	"github.com/jusongchen/concurrencyDemo/pkg/demoapp"
 	"github.com/kelseyhightower/envconfig"
 )
 

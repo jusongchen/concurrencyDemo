@@ -9,7 +9,7 @@ import (
 	"sync"
 	"syscall"
 
-	"git.soma.salesforce.com/jusong-chen/concurrency/pkg/mandelbrot"
+	"github.com/jusongchen/concurrencyDemo/pkg/mandelbrot"
 )
 
 //Job describes job info

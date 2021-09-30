@@ -79,3 +79,7 @@ func pixel(i, j, width, height int) color.Color {
 func norm(x, total int, min, max float64) float64 {
 	return (max-min)*float64(x)/float64(total) - max
 }
+
+func init() {
+	os.MkdirAll("/tmp/test/images", 0744)
+}
