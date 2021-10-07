@@ -3,7 +3,6 @@ package demoapp
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"strconv"
 	"sync"
@@ -22,7 +21,7 @@ func Run(ctx context.Context, degreeOfConcurrency int, numJob int) {
 
 	wg := &sync.WaitGroup{}
 
-	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
 	jobs := make(chan Job)
